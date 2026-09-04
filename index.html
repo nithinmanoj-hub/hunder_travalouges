@@ -90,8 +90,9 @@ footer{background:#061e1a;color:#c8ddd4;padding:60px 0 30px}.footer-grid{display
  <div class="about-image"></div>
  <div class="about-copy"><div class="kicker">About HUNDER TRAVELOUGES</div><h2>Travel planning designed around the journey.</h2>
  <p>HUNDER TRAVELOUGES is a Kannur-based travel planning experience focused on carefully structured routes, beautiful destinations, practical journeys and customer-friendly group travel planning.</p>
- <p>Instead of overwhelming travellers with endless random combinations, every journey is guided through predefined packages so your route stays clear and practical.</p>
- <div class="points"><div class="point">Carefully structured trips</div><div class="point">Beautiful destinations</div><div class="point">Kannur-based journeys</div><div class="point">Simple WhatsApp enquiries</div></div>
+ <p>We organise the journey around predefined package combinations rather than throwing random destinations together. The planner starts from the trip duration, then guides travellers through destinations that belong to the available planned routes.</p>
+ <p>Our current planner covers short one-day outings, overnight journeys and longer multi-destination circuits, with journeys starting and returning to Kannur. HUNDY GUIDE can explain the published routes, compare official combinations, remember the current conversation and move the enquiry to WhatsApp.</p>
+ <div class="points"><div class="point">Carefully structured trips</div><div class="point">Kannur-based journeys</div><div class="point">Predefined route combinations</div><div class="point">Group-friendly planning</div><div class="point">Simple WhatsApp enquiries</div><div class="point">HUNDY conversational trip guide</div></div>
  </div>
 </div>
 </section>
@@ -372,69 +373,699 @@ document.getElementById("year").textContent=new Date().getFullYear();
 renderDuration();
 </script>
 
-<!-- HUNDY GUIDE 2.0 -->
+<!-- HUNDY GUIDE 3.0 — conversational, package-aware trip advisor -->
 <style>
 #hundyLauncher{position:fixed;right:22px;bottom:22px;z-index:2147483647;border:0;border-radius:999px;padding:15px 20px;background:#ffdc81;color:#16352e;font-weight:900;cursor:pointer;box-shadow:0 12px 35px rgba(0,0,0,.3);font-family:inherit}
-#hundyPanel{position:fixed;right:18px;bottom:82px;width:min(430px,calc(100vw - 24px));height:min(620px,76vh);z-index:2147483647;background:#102a24;color:#fff;border:1px solid rgba(255,220,129,.4);border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.4);display:none;overflow:hidden;font-family:inherit}
-#hundyPanel.open{display:flex!important;flex-direction:column}.hundyHead{padding:17px 19px;background:#173a31;display:flex;justify-content:space-between;align-items:center}.hundyHead b{color:#ffdc81;font-size:18px}.hundyHead span{font-size:12px;color:#cde0d8}.hundyClose{background:none;border:0;color:#fff;font-size:25px;cursor:pointer}.hundyMessages{flex:1;overflow:auto;padding:15px;display:flex;flex-direction:column;gap:10px}.hundyMsg{max-width:90%;padding:11px 13px;border-radius:15px;line-height:1.5;font-size:14px;white-space:pre-line}.hundyBot{align-self:flex-start;background:#1d473c}.hundyUser{align-self:flex-end;background:#ffdc81;color:#173a31}.hundyChips{padding:0 14px 10px;display:flex;gap:6px;flex-wrap:wrap}.hundyChip{border:1px solid rgba(255,220,129,.5);background:transparent;color:#ffdc81;border-radius:999px;padding:7px 9px;font-size:12px;cursor:pointer}.hundyForm{display:flex;padding:12px;border-top:1px solid rgba(255,255,255,.1);gap:8px}.hundyForm input{flex:1;min-width:0;border:0;border-radius:12px;padding:12px;font:inherit}.hundyForm button{border:0;border-radius:12px;background:#ffdc81;color:#173a31;font-weight:800;padding:0 14px;cursor:pointer}.hundyStatus{font-size:11px;padding:0 14px 8px;color:#9ec7b8}
+#hundyPanel{position:fixed;right:18px;bottom:82px;width:min(450px,calc(100vw - 24px));height:min(650px,78vh);z-index:2147483647;background:#102a24;color:#fff;border:1px solid rgba(255,220,129,.4);border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.4);display:none;overflow:hidden;font-family:inherit}
+#hundyPanel.open{display:flex!important;flex-direction:column}
+.hundyHead{padding:17px 19px;background:#173a31;display:flex;justify-content:space-between;align-items:center}
+.hundyHead b{color:#ffdc81;font-size:18px}.hundyHead span{font-size:12px;color:#cde0d8}.hundyClose{background:none;border:0;color:#fff;font-size:25px;cursor:pointer}
+.hundyMessages{flex:1;overflow:auto;padding:15px;display:flex;flex-direction:column;gap:10px}
+.hundyMsg{max-width:92%;padding:11px 13px;border-radius:15px;line-height:1.55;font-size:14px;white-space:pre-line}
+.hundyBot{align-self:flex-start;background:#1d473c}.hundyUser{align-self:flex-end;background:#ffdc81;color:#173a31}
+.hundyChips{padding:0 14px 10px;display:flex;gap:6px;flex-wrap:wrap}.hundyChip{border:1px solid rgba(255,220,129,.5);background:transparent;color:#ffdc81;border-radius:999px;padding:7px 9px;font-size:12px;cursor:pointer}
+.hundyForm{display:flex;padding:12px;border-top:1px solid rgba(255,255,255,.1);gap:8px}.hundyForm input{flex:1;min-width:0;border:0;border-radius:12px;padding:12px;font:inherit}.hundyForm button{border:0;border-radius:12px;background:#ffdc81;color:#173a31;font-weight:800;padding:0 14px;cursor:pointer}
+.hundyStatus{font-size:11px;padding:0 14px 8px;color:#9ec7b8}.hundyTyping{opacity:.72;font-style:italic}
 </style>
+
 <button type="button" id="hundyLauncher">HUNDY GUIDE</button>
 <div id="hundyPanel" role="dialog" aria-label="HUNDY GUIDE chat">
- <div class="hundyHead"><div><b>HUNDY GUIDE</b><br><span>Official Hunder Travelogues Travel Assistant</span></div><button type="button" class="hundyClose" id="hundyClose">×</button></div>
- <div class="hundyMessages" id="hundyMessages"></div>
- <div class="hundyChips"><button type="button" class="hundyChip" data-q="How do I use this website?">How to use website</button><button type="button" class="hundyChip" data-q="Which package is best this month?">Best this month</button><button type="button" class="hundyChip" data-q="What is the weather in Munnar?">Munnar weather</button><button type="button" class="hundyChip" data-q="Which trips include Munnar?">Munnar options</button></div>
- <div class="hundyStatus">Official packages • Website help • Seasonal recommendations • Weather lookup</div>
- <form class="hundyForm" id="hundyForm"><input id="hundyInput" placeholder="Ask about trips, weather or the best month..." autocomplete="off"><button type="submit">Send</button></form>
+  <div class="hundyHead">
+    <div><b>HUNDY GUIDE</b><br><span>Your Hunder Travelogues travel assistant</span></div>
+    <button type="button" class="hundyClose" id="hundyClose">×</button>
+  </div>
+  <div class="hundyMessages" id="hundyMessages"></div>
+  <div class="hundyChips">
+    <button type="button" class="hundyChip" data-q="Which trip would you recommend for me?">Recommend a trip</button>
+    <button type="button" class="hundyChip" data-q="Which packages include Munnar?">Munnar options</button>
+    <button type="button" class="hundyChip" data-q="What is the best combination with Munnar?">Best Munnar combination</button>
+    <button type="button" class="hundyChip" data-q="Tell me about Hunder Travelogues">About Hunder</button>
+    <button type="button" class="hundyChip" data-q="How does the trip planner work?">How to plan</button>
+  </div>
+  <div class="hundyStatus">Company knowledge • Official package database • Smart combinations • Website help • Weather</div>
+  <form class="hundyForm" id="hundyForm">
+    <input id="hundyInput" placeholder="Ask anything about our trips..." autocomplete="off">
+    <button type="submit">Send</button>
+  </form>
 </div>
-<script>
-(function(){
- const $=id=>document.getElementById(id), panel=$('hundyPanel'), msgs=$('hundyMessages'), input=$('hundyInput');
- const seasonal={
-  January:['Munnar','Vagamon','Ooty','Kodaikanal','Coorg','Chikmagalur'],February:['Munnar','Vagamon','Ooty','Kodaikanal','Coorg','Chikmagalur'],March:['Munnar','Vagamon','Kodaikanal','Coorg','Chikmagalur'],April:['Munnar','Vagamon','Kodaikanal','Ooty'],May:['Munnar','Vagamon','Kodaikanal','Ooty'],June:['Munnar','Wayanad','Vagamon','Coorg'],July:['Wayanad','Vagamon','Munnar','Coorg'],August:['Wayanad','Vagamon','Munnar','Coorg'],September:['Munnar','Wayanad','Vagamon','Coorg','Chikmagalur'],October:['Munnar','Wayanad','Vagamon','Coorg','Chikmagalur','Ooty'],November:['Munnar','Wayanad','Vagamon','Coorg','Chikmagalur','Ooty'],December:['Munnar','Vagamon','Ooty','Kodaikanal','Coorg','Chikmagalur']
- };
- const monthNames=Object.keys(seasonal);
- function add(text,who){const d=document.createElement('div');d.className='hundyMsg '+(who==='user'?'hundyUser':'hundyBot');d.textContent=text;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight}
- function openChat(){panel.classList.add('open');if(!msgs.children.length)add('Hello! I am HUNDY GUIDE, your Hunder Travelogues assistant. I can explain how to use this website, explore our official packages, suggest trips for a month and check current weather for supported destinations.','bot');setTimeout(()=>input.focus(),50)}
- function pkgs(){return typeof packages!=='undefined'&&Array.isArray(packages)?packages:[]}
- function dur(d){return `${d.days} Day${d.days==1?'':'s'} / ${d.nights} Night${d.nights==1?'':'s'}`}
- function current(){return typeof state!=='undefined'?state:null}
- function packageMatchesDest(dest){return pkgs().filter(p=>p.destinations.some(d=>d.toLowerCase()===dest.toLowerCase()))}
- function websiteHelp(){return 'HOW TO PLAN YOUR TRIP\n\n1. Choose your trip duration.\n2. Choose your main destination.\n3. Choose the next destination shown by the planner. These choices come only from Hunder Travelogues planned combinations.\n4. Even if only one next destination is available, select it yourself to complete your journey.\n5. Review your complete trip details.\n6. Fill in your contact details and proceed to WhatsApp to confirm/enquire.\n\nYou can use the Back button anytime to change your selection.'}
- function recommendForMonth(month){const places=seasonal[month]||seasonal[monthNames[new Date().getMonth()]];const matches=pkgs().filter(p=>p.destinations.some(d=>places.some(x=>d.toLowerCase().includes(x.toLowerCase()))));const unique=[...new Map(matches.map(p=>[p.id,p])).values()];return `For ${month}, destinations commonly considered suitable include: ${places.join(', ')}.\n\nFrom our official Hunder Travelogues packages, these are good options to explore:\n${unique.slice(0,6).map(p=>'• '+dur(p.duration)+' — '+p.destinations.join(' + ')).join('\n')}\n\nSeasonal conditions can change, so ask me for the current weather before finalising travel dates.`}
- async function weather(place){add('Checking current weather for '+place+'...','bot');try{const geo=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(place)+',India&count=1&language=en&format=json');const g=await geo.json();if(!g.results||!g.results[0])throw new Error();const r=g.results[0];const url=`https://api.open-meteo.com/v1/forecast?latitude=${r.latitude}&longitude=${r.longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FKolkata&forecast_days=3`;const f=await (await fetch(url)).json();const code={0:'Clear sky',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorm'}[f.current.weather_code]||'Mixed conditions';const lines=f.daily.time.map((d,i)=>`${d}: ${Math.round(f.daily.temperature_2m_min[i])}–${Math.round(f.daily.temperature_2m_max[i])}°C, rain chance ${f.daily.precipitation_probability_max[i]??'n/a'}%`).join('\n');return `${r.name}, ${r.country||'India'}\nNow: ${Math.round(f.current.temperature_2m)}°C • ${code} • Wind ${Math.round(f.current.wind_speed_10m)} km/h\n\nNext 3 days:\n${lines}\n\nWeather is informational and forecasts can change.`}catch(e){return `I couldn't retrieve live weather for ${place} right now. Please try again in a moment or use a more specific destination name.`}}
- async function reply(q){const t=q.toLowerCase().trim();if(/how.*use|use.*website|plan.*website|how.*plan/.test(t))return websiteHelp();if(/current|my trip|selected/.test(t)){const s=current();return s&&s.selected&&s.selected.length?`Your current journey: ${s.selected.join(' → ')}${s.duration?'\nDuration: '+dur(s.duration):''}`:'You have not started selecting a trip yet. Begin with the trip duration in the planner.'}
-  const month=monthNames.find(m=>t.includes(m.toLowerCase()))||((/this month|best.*month/.test(t))?monthNames[new Date().getMonth()]:null);if(month)return recommendForMonth(month);
-  if(/weather|temperature|rain|forecast/.test(t)){let place=null;for(const p of pkgs().flatMap(x=>x.destinations)){if(t.includes(p.toLowerCase())){place=p;break}}place=place||'Munnar';return await weather(place)}
-  if(/trip|package|option|include|munnar|wayanad|coorg|ooty|vagamon|mysore|chikmagalur|kodaikanal|marayoor|ramakkalmedu|thekkady|kochi|ernakulam/.test(t)){const all=pkgs();let ms=[];for(const p of all){if(p.destinations.some(d=>t.includes(d.toLowerCase())))ms.push(p)}if(!ms.length&&/available|all trip|what trip/.test(t))ms=all;ms=[...new Map(ms.map(p=>[p.id,p])).values()];if(ms.length)return `Here are matching official Hunder Travelogues packages:\n\n${ms.slice(0,12).map(p=>'• '+dur(p.duration)+' — '+p.destinations.join(' + ')).join('\n')}`}
-  if(/nature|hill|mountain|peaceful/.test(t)){const ms=pkgs().filter(p=>/nature|mountain|hill|scenic|forest/i.test(JSON.stringify(p)));return ms.length?`For a nature-focused journey, explore:\n${ms.slice(0,8).map(p=>'• '+dur(p.duration)+' — '+p.destinations.join(' + ')).join('\n')}`:'Tell me your preferred duration and I will suggest an official package.'}
-  return 'I can currently help with:\n• How to use this website\n• Official Hunder Travelogues packages\n• Destination combinations\n• Your current trip selection\n• Which packages may suit a particular month\n• Current weather for destinations\n\nTry: “How do I use the website?”, “Which package is best in October?”, or “What is the weather in Munnar?”';}
- async function ask(q){openChat();add(q,'user');input.disabled=true;const a=await reply(q);add(a,'bot');input.disabled=false;input.focus()}
- $('hundyLauncher').onclick=()=>panel.classList.contains('open')?panel.classList.remove('open'):openChat();$('hundyClose').onclick=()=>panel.classList.remove('open');document.querySelectorAll('.hundyChip').forEach(b=>b.onclick=()=>ask(b.dataset.q));$('hundyForm').addEventListener('submit',e=>{e.preventDefault();const q=input.value.trim();if(q){input.value='';ask(q)}});
-})();
-</script>
 
 <script>
-// HUNDY GUIDE destination seasonal knowledge upgrade
-window.HUNDY_DESTINATION_SEASONS = {
-  "Munnar": {best:"September to March", summer:"March to May is pleasant for a hill escape", monsoon:"June to August is lush and scenic, but expect rain and possible travel disruptions"},
-  "Wayanad": {best:"October to May", summer:"Good for nature and cooler highland areas", monsoon:"June to September is very green and dramatic; heavy rain can affect activities"},
-  "Vagamon": {best:"September to May", summer:"Comfortable hill weather", monsoon:"Very scenic and misty; rain can affect outdoor activities"},
-  "Thekkady": {best:"October to February", summer:"March to May can suit wildlife-focused trips", monsoon:"Lush and beautiful, but rain may affect outdoor plans"},
-  "Kodaikanal": {best:"October to June", summer:"Excellent hill-station escape", monsoon:"Scenic but wet"},
-  "Ooty": {best:"March to June and September to November", summer:"One of the strongest choices for escaping heat", monsoon:"Green and atmospheric but rainy"},
-  "Coorg": {best:"October to March", summer:"Pleasant compared with the plains", monsoon:"Very lush with heavy Western Ghats rainfall"},
-  "Chikmagalur": {best:"September to March", summer:"Good for hill and coffee-country experiences", monsoon:"Beautiful but rainy in many areas"},
-  "Mysore": {best:"October to February", summer:"Hotter for sightseeing", monsoon:"Moderate seasonal rains depending on conditions"},
-  "Bangalore": {best:"October to February", summer:"Generally manageable but warmer", monsoon:"Pleasant with seasonal rain"},
-  "Kochi": {best:"November to February", summer:"Hot and humid", monsoon:"Rainy but culturally and visually interesting"},
-  "Ernakulam": {best:"November to February", summer:"Hot and humid", monsoon:"Rainy season"},
-  "Marayoor": {best:"September to March", summer:"Comfortable highland conditions", monsoon:"Lush and scenic with rain"},
-  "Ramakkalmedu": {best:"September to May", summer:"Pleasant and windy", monsoon:"Scenic but wet and windy"},
-  "Athirappilly": {best:"September to February", summer:"Water flow may vary", monsoon:"Waterfalls are spectacular but conditions can be very wet"},
-  "Alappuzha": {best:"November to February", summer:"Hot and humid", monsoon:"Rainy; backwater experience depends on conditions"},
-  "Idukki": {best:"September to March", summer:"Good for high-range sightseeing", monsoon:"Very green but heavy rain may affect travel"},
-  "Belur": {best:"October to February", summer:"Hotter for heritage sightseeing", monsoon:"Seasonal rain"}
-};
+(function(){
+  const $=id=>document.getElementById(id), panel=$('hundyPanel'), msgs=$('hundyMessages'), input=$('hundyInput');
+  const THINK_MIN=850, THINK_MAX=1450;
+
+  /* HUNDY GUIDE 4.0
+     Conversation-aware route intelligence.
+     Important rule: HUNDY reasons from the site's actual package database first.
+     It never silently invents a package, inclusion, price or route.
+  */
+
+  const seasonal={
+    January:['Munnar','Vagamon','Ooty','Kodaikanal','Coorg','Chikmagalur'],
+    February:['Munnar','Vagamon','Ooty','Kodaikanal','Coorg','Chikmagalur'],
+    March:['Munnar','Vagamon','Kodaikanal','Coorg','Chikmagalur'],
+    April:['Munnar','Vagamon','Kodaikanal','Ooty'],
+    May:['Munnar','Vagamon','Kodaikanal','Ooty'],
+    June:['Munnar','Wayanad','Vagamon','Coorg'],
+    July:['Wayanad','Vagamon','Munnar','Coorg'],
+    August:['Wayanad','Vagamon','Munnar','Coorg'],
+    September:['Munnar','Wayanad','Vagamon','Coorg','Chikmagalur'],
+    October:['Munnar','Wayanad','Vagamon','Coorg','Chikmagalur','Ooty'],
+    November:['Munnar','Wayanad','Vagamon','Coorg','Chikmagalur','Ooty'],
+    December:['Munnar','Vagamon','Ooty','Kodaikanal','Coorg','Chikmagalur']
+  };
+
+  const destinationAliases={
+    munnar:'Munnar',munnarhills:'Munnar',wayanad:'Wayanad',vagamon:'Vagamon',
+    thekkady:'Thekkady',kumily:'Thekkady',kodaikanal:'Kodaikanal',kodai:'Kodaikanal',
+    ooty:'Ooty',coorg:'Coorg',madikeri:'Coorg',chikmagalur:'Chikmagalur',
+    mysore:'Mysore',mysuru:'Mysore',bangalore:'Bangalore',bengaluru:'Bangalore',blr:'Bangalore',
+    kochi:'Kochi',ernakulam:'Ernakulam',marayoor:'Marayoor',ramakkalmedu:'Ramakkalmedu',
+    ramakkalmeduviewpoint:'Ramakkalmedu',ramakkalmeduviewpoint:'Ramakkalmedu',
+    idukki:'Idukki',athirappilly:'Athirappilly',athirapally:'Athirappilly',
+    alappuzha:'Alappuzha',alleppey:'Alappuzha',belur:'Belur'
+  };
+
+  const destinationProfiles={
+    Munnar:{vibe:'classic hill-station',keywords:['tea','mountain','hill','view','waterfall','peaceful','cool','scenic'],pairs:['Marayoor','Ramakkalmedu','Vagamon','Thekkady','Ernakulam','Kochi']},
+    Wayanad:{vibe:'nature and forest',keywords:['nature','forest','waterfall','wildlife','peaceful','green'],pairs:[]},
+    Vagamon:{vibe:'meadows and relaxed hill views',keywords:['meadow','pine','hill','peaceful','mist','nature'],pairs:['Munnar','Ramakkalmedu','Kodaikanal']},
+    Thekkady:{vibe:'forest and spice-country',keywords:['forest','wildlife','spice','nature','lake'],pairs:['Munnar','Marayoor']},
+    Kodaikanal:{vibe:'cool hill-station sightseeing',keywords:['hill','lake','pine','view','cool','peaceful'],pairs:['Ramakkalmedu','Munnar','Vagamon']},
+    Ooty:{vibe:'classic Nilgiri hill-station',keywords:['hill','lake','garden','cool','family'],pairs:['Chikmagalur','Mysore']},
+    Coorg:{vibe:'coffee-country and scenic hills',keywords:['coffee','waterfall','hill','nature','peaceful'],pairs:['Mysore','Chikmagalur']},
+    Chikmagalur:{vibe:'coffee estates and mountain views',keywords:['coffee','mountain','waterfall','view','nature'],pairs:['Coorg','Mysore','Ooty']},
+    Mysore:{vibe:'heritage and city sightseeing',keywords:['palace','heritage','city','shopping'],pairs:['Coorg','Chikmagalur','Bangalore','Ooty']},
+    Bangalore:{vibe:'city and urban sightseeing',keywords:['city','shopping','urban'],pairs:['Mysore','Coorg']},
+    Kochi:{vibe:'city, heritage and coastal culture',keywords:['city','heritage','shopping','culture','fort'],pairs:['Munnar','Ernakulam']},
+    Ernakulam:{vibe:'city and leisure',keywords:['city','shopping','marine drive'],pairs:['Munnar','Vagamon','Kochi']},
+    Marayoor:{vibe:'sandalwood forest and mountain scenery',keywords:['sandalwood','forest','dolmen','nature','mountain'],pairs:['Munnar','Vagamon','Ramakkalmedu','Thekkady']},
+    Ramakkalmedu:{vibe:'windy viewpoints and high-range scenery',keywords:['view','wind','mountain','scenic','nature'],pairs:['Munnar','Marayoor','Vagamon','Kodaikanal']},
+    Athirappilly:{vibe:'waterfalls and forest scenery',keywords:['waterfall','forest','nature'],pairs:[]},
+    Alappuzha:{vibe:'backwaters and relaxed Kerala scenery',keywords:['backwater','boat','relaxed','kerala'],pairs:[]},
+    Idukki:{vibe:'high-range mountain scenery',keywords:['mountain','forest','view','nature'],pairs:['Munnar','Ramakkalmedu','Vagamon']},
+    Belur:{vibe:'heritage sightseeing',keywords:['heritage','temple','history'],pairs:['Chikmagalur','Mysore']}
+  };
+
+  // Short conversational memory. This survives while the page is open and is deliberately
+  // limited to the current chat, so a new customer starts clean after a page refresh.
+  const memory={turns:[], lastDestination:null, lastDestinations:[], lastPackage:null, lastDuration:null,
+    lastIntent:null, lastRecommendation:null, preferences:{}, lastQuestion:null};
+
+  function pkgs(){return typeof packages!=='undefined'&&Array.isArray(packages)?packages:[]}
+  function dur(d){return `${d.days} Day${d.days==1?'':'s'} / ${d.nights} Night${d.nights==1?'':'s'}`}
+  function norm(x){return String(x||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim()}
+  function compact(x){return norm(x).replace(/\s/g,'')}
+  function cleanDest(x){return destinationAliases[compact(x)]||null}
+  function allDestinations(){return [...new Set(pkgs().flatMap(p=>p.destinations))]}
+  function unique(arr){return [...new Map(arr.map(p=>[p.id,p])).values()]}
+  function current(){return typeof state!=='undefined'?state:null}
+
+  function destinationInText(t){
+    const n=norm(t), c=compact(t), found=[];
+    allDestinations().forEach(d=>{if(n.includes(norm(d)))found.push(d)});
+    Object.keys(destinationAliases).forEach(a=>{if(c.includes(a))found.push(destinationAliases[a])});
+    return [...new Set(found)];
+  }
+
+  function formatPackage(p,extra=''){
+    return `• ${dur(p.duration)} — ${p.destinations.join(' + ')}${extra}`;
+  }
+  function packagesForDestinations(dests){
+    return unique(pkgs().filter(p=>dests.every(d=>p.destinations.some(x=>norm(x)===norm(d)))));
+  }
+  function packagesContaining(dests){
+    return unique(pkgs().filter(p=>dests.some(d=>p.destinations.some(x=>norm(x)===norm(d)))));
+  }
+  function sameDurationPackages(dests,duration){
+    return unique(pkgs().filter(p=>p.duration.days===duration.days&&p.duration.nights===duration.nights&&dests.every(d=>p.destinations.includes(d))));
+  }
+  function scorePackage(p,terms){
+    const blob=norm(JSON.stringify(p)); let score=0;
+    terms.forEach(term=>{if(blob.includes(norm(term)))score+=3}); return score;
+  }
+  function rankedPackages(terms){
+    return pkgs().map(p=>({p,score:scorePackage(p,terms)})).filter(x=>x.score>0)
+      .sort((a,b)=>b.score-a.score).map(x=>x.p);
+  }
+  function durationFromText(t){
+    if(/(?:3\s*(?:day|days)|three\s*day|3d)\b/.test(t)&&/(?:4\s*(?:night|nights)|four\s*night|4n)\b/.test(t))return {days:3,nights:4};
+    if(/(?:2\s*(?:day|days)|two\s*day|2d)\b/.test(t)&&/(?:3\s*(?:night|nights)|three\s*night|3n)\b/.test(t))return {days:2,nights:3};
+    if(/(?:2\s*(?:day|days)|two\s*day|2d)\b/.test(t)&&/(?:1\s*(?:night|nights)|one\s*night|1n)\b/.test(t))return {days:2,nights:1};
+    if(/(?:1\s*(?:day|days)|one\s*day|1d)\b/.test(t)&&/(?:0\s*(?:night|nights)|no\s*night)\b/.test(t))return {days:1,nights:0};
+    if(/\b(?:1|one)\s*(?:day|days)\b/.test(t))return {days:1,nights:0};
+    return null;
+  }
+
+  function packageSummary(p){
+    let out=`${p.destinations.join(' + ')} is a ${dur(p.duration)} package.`;
+    if(p.style||p.tripStyle)out+=` The trip style is ${p.style||p.tripStyle}.`;
+    if(p.route?.length)out+=`\nRoute: ${p.route.join(' → ')}.`;
+    if(p.highlights?.length)out+=`\nHighlights: ${p.highlights.slice(0,8).join(', ')}.`;
+    if(p.stays?.length)out+=`\nStay plan: ${p.stays.join(' • ')}.`;
+    if(p.distance?.approximateTotal||p.distance?.oneWay||p.distance)out+=`\nApproximate distance: ${p.distance?.approximateTotal||p.distance?.oneWay||p.distance}.`;
+    return out;
+  }
+
+  function routeIndex(p,d){return p.destinations.findIndex(x=>norm(x)===norm(d));}
+  function pairEvidence(a,b){
+    const exact=packagesForDestinations([a,b]);
+    if(exact.length)return {exact,shared:true};
+    return {exact:[],shared:false};
+  }
+
+  function relationship(a,b){
+    if(a===b)return {kind:'same',score:10,text:`You're still talking about ${a}.`};
+    const exact=packagesForDestinations([a,b]);
+    if(exact.length){
+      const adjacent=exact.some(p=>{const ia=routeIndex(p,a),ib=routeIndex(p,b);return ia>=0&&ib>=0&&Math.abs(ia-ib)===1});
+      return {kind:adjacent?'planned-adjacent':'planned-combo',score:9,text:`${a} and ${b} are both part of an official Hunder Travelogues package${adjacent?' and appear as consecutive stops in at least one planned route':''}.`,packages:exact};
+    }
+    const aPackages=packagesContaining([a]), bPackages=packagesContaining([b]);
+    const aPairs=(destinationProfiles[a]?.pairs||[]);
+    const bPairs=(destinationProfiles[b]?.pairs||[]);
+    const suggested=aPairs.includes(b)||bPairs.includes(a);
+    return {kind:suggested?'suggested-but-not-planned':'separate',score:suggested?4:1,
+      text:suggested?`${b} is a logical destination to consider with ${a}, but I don't see that exact combination in the current official package database.`:`I don't see ${a} + ${b} as an official combined package in the current planner.`,
+      aPackages,bPackages};
+  }
+
+  function packageForConversation(){
+    if(memory.lastPackage)return memory.lastPackage;
+    if(memory.lastDestinations.length){
+      const exact=packagesForDestinations(memory.lastDestinations);
+      if(exact.length)return exact[0];
+    }
+    return null;
+  }
+
+  // Emotion + constraint understanding: emojis and natural wording can carry meaning even
+  // when the customer never explicitly says "I'm sad", "I only have one day", etc.
+  // Conversational language layer: understand modern texting, Gen-Z shorthand,
+  // fragments, typos and internet expressions without copying that slang into HUNDY's reply.
+  function understandSlang(raw){
+    const q=String(raw||'');
+    const t=norm(q);
+    const compact=t.replace(/\s+/g,'');
+    const slang={
+      profanity:['wtf','tf','wtf?','wtff','wtfff','what the heck','what the hell'],
+      disbelief:['fr','frfr','no cap','nocap','deadass','seriously','rly','really'],
+      uncertainty:['idk','ik','wdym','wym','imo','imho','tbh','ngl','hmm'],
+      urgency:['rn','asap','omw'],
+      casual:['bro','bruh','dude','pls','plz','btw','hbu','wyd','u','ur','bc','cuz','coz','wanna','gonna','gotta','lemme','gimme'],
+      positive:['fire','lit','slay','valid','based','goated','goat','ate','ate that','vibe','vibes','w','ww'],
+      negative:['mid','l','sus','cooked','rip','down bad','yikes'],
+      playful:['lol','lmao','lmfao','rofl','xd','😭','💀']
+    };
+    const found=[];
+    Object.entries(slang).forEach(([group,words])=>{
+      if(words.some(w=>{const x=norm(w); return x.includes(' ')?t.includes(x):new RegExp('(^|\\s)'+x.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+'($|\\s)').test(t) || compact.includes(x)})) found.push(group);
+    });
+    return found;
+  }
+
+  function understandTone(raw){
+    const q=String(raw||'');
+    const t=norm(q);
+    const tone={emotion:null,constraints:[],signals:[],slang:understandSlang(q)};
+    // Internet shorthand is a meaning signal, not language HUNDY should echo.
+    if(tone.slang.includes('profanity')){
+      tone.emotion='frustrated';
+      tone.signals.push('The customer used strong internet shorthand to express surprise, frustration, disbelief, or emphasis. Never repeat the profanity; respond calmly.');
+    }
+    if(/\b(?:fr|frfr|deadass|no cap|nocap|istg|ong)\b/.test(t))
+      tone.signals.push('The customer is emphasizing that they are serious or being genuine.');
+    if(/\b(?:idk|ik|wdym|wym|ngl|tbh|imo|imho)\b/.test(t))
+      tone.signals.push('The customer is using casual shorthand; infer the intended question from the surrounding words.');
+    if(/\b(?:rn|asap|omw)\b/.test(t))
+      tone.signals.push('The customer is referring to the current moment or urgency.');
+    if(/[🥲😢😭😞😔☹️🙁😩😫😥😓]/u.test(q)||/\b(sad|upset|disappointed|stressed|tired|exhausted|worried|struggling|unfortunately|sadly)\b/.test(t)){
+      tone.emotion='low'; tone.signals.push('The customer sounds disappointed, stressed, tired, or emotionally low.');
+    }
+    if(/[😍🥰❤️♥️💕💖💗😘🤩😊☺️🫶]/u.test(q)||/\b(love|loved|loving|excited|amazing|beautiful|perfect|happy)\b/.test(t)){
+      tone.emotion=tone.emotion==='low'?'mixed':'positive'; tone.signals.push('The customer is expressing affection, excitement, happiness, or strong approval.');
+    }
+    if(/[😡🤬😤]/u.test(q)||/\b(angry|annoyed|frustrated|irritated)\b/.test(t)){
+      tone.emotion='frustrated'; tone.signals.push('The customer sounds frustrated or annoyed.');
+    }
+    if(/[😂🤣😆😅😉🙃]/u.test(q)||/\b(joking|lol|haha|funny)\b/.test(t)){
+      tone.signals.push('The customer may be joking or keeping the message light.');
+    }
+
+    // Explicit limitations / constraints. Preserve the actual restriction instead of
+    // treating it as a casual preference.
+    // People do not always speak in complete sentences. Children, stressed customers,
+    // and casual texters often write fragments such as "lot of work only one day free 🥲".
+    // Read the meaning of the whole message, not just textbook grammar.
+    const patterns=[
+      [/\b(?:only|just)\s+(?:have|got)\s+(\d+)\s*(?:day|days|d)\b/,'days'],
+      [/\b(?:have|got)\s+(?:only|just)\s+(\d+)\s*(?:day|days|d)\b/,'days'],
+      [/\b(\d+)\s*(?:day|days|d)\s+(?:is|are)\s+(?:only|all)\s+(?:for|that)\s+me\b/,'days'],
+      [/\b(?:i|we)\s+(?:only|just)\s+have\s+(\d+)\s*(?:day|days|d)\b/,'days'],
+      [/\bonly\s+(\d+)\s*(?:day|days|d)\s+(?:free|available|off)\b/,'days'],
+      [/\b(?:one|1)\s*(?:day|days)\s+(?:free|available|off)\b/,'days1'],
+      [/\b(?:free|available|off)\s+(?:for|only)\s+(\d+)\s*(?:day|days|d)\b/,'days'],
+      [/\b(?:got|have|has)\s+(?:just|only)\s+(?:one|1)\s*(?:day|days)\s+(?:free|available|off)\b/,'days1']
+    ];
+    patterns.forEach(([re,type])=>{
+      const m=t.match(re);
+      if(m){
+        const value=type==='days1'?1:Number(m[1]);
+        if(!tone.constraints.some(c=>c.type==='days'&&c.value===value))tone.constraints.push({type:'days',value,text:m[0]});
+      }
+    });
+
+    // Fragmented/indirect time-limit language: "busy with work, one day free",
+    // "lot of stressful work only one day free", "exam week, just Saturday free", etc.
+    const oneDayFree = /\b(?:one|1)\s*(?:day|days)\s+(?:free|available|off)\b|\b(?:only|just)\s+(?:one|1)\s*(?:day|days)\s+(?:free|available|off)\b/.test(t);
+    const workPressure = /\b(?:lot|lots|loads|ton|tons|much|so much)\s+(?:of\s+)?(?:work|workload|works)\b|\b(?:busy|stress(?:ed|ful)?|tired|exhausted|hectic|packed|overworked|exam|exams|class(?:es)?|job|college|school)\b/.test(t);
+    if(oneDayFree){
+      if(!tone.constraints.some(c=>c.type==='days'&&c.value===1))tone.constraints.push({type:'days',value:1,text:'one day free'});
+      tone.constraints.push({type:'limited-time',text:q});
+      if(workPressure && tone.emotion!=='frustrated')tone.emotion=tone.emotion?'mixed':'low';
+    }
+    if(workPressure && /\b(?:free|available|off)\b/.test(t)){
+      tone.signals.push('The customer may be under work/study pressure and is describing a limited free period.');
+      tone.constraints.push({type:'busy-schedule',text:q});
+    }
+    if(/\b(?:i|we)\s+(?:can't|cannot|can not|dont|don't)\s+(?:do|go|stay|travel)\b/.test(t))tone.constraints.push({type:'cannot-do',text:q});
+    if(/\b(?:i|we)\s+(?:need|must|have to)\b/.test(t))tone.constraints.push({type:'must',text:q});
+    if(/\b(?:maximum|max|at most|no more than|within)\b/.test(t))tone.constraints.push({type:'maximum',text:q});
+    if(/\b(?:minimum|min|at least)\b/.test(t))tone.constraints.push({type:'minimum',text:q});
+    if(/\b(?:budget|afford|cheap|low budget|limited money)\b/.test(t))tone.constraints.push({type:'budget',text:q});
+    return tone;
+  }
+
+  function emotionAwarePrefix(tone){
+    if(tone.emotion==='low')return `I get you 🥲 Let’s work within that limit rather than forcing a longer trip.`;
+    if(tone.emotion==='frustrated')return `I understand 😮‍💨 Let’s keep this simple and work around the issue.`;
+    if(tone.emotion==='positive')return `That sounds good! 😊`;
+    if(tone.emotion==='mixed')return `I get you 🥲 — and I can still help you find the best option within that limit.`;
+    if(tone.slang?.includes('playful'))return `Haha, got you 😄`;
+    return '';
+  }
+
+  // Broad everyday-chat layer. HUNDY should understand normal human conversation,
+  // not only travel keywords. It interprets shorthand internally and keeps replies clean.
+  function conversationalIntent(q,tone){
+    const t=norm(q).trim();
+    if(!t)return 'empty';
+    if(/^(wtf|tf|wtff|wtfff|what the hell|what the heck)$/.test(t))return 'surprise';
+    if(/^(lol|lmao|lmfao|rofl|haha|hehe|xd)$/.test(t))return 'laugh';
+    if(/^(idk|ik|wdym|wym|huh|hmm|uhh|umm|what)$/.test(t))return 'confused';
+    if(/^(fr|frfr|deadass|no cap|nocap|ong|istg)$/.test(t))return 'emphasis';
+    if(/^(bet|sure|okay|ok|k|kk|alright|aight|cool|yep|yup|yeah|yes)$/.test(t))return 'agreement';
+    if(/^(pls|plz|please|help|help me)$/.test(t))return 'request';
+    if(/^(thanks|thank you|ty|thx|tysm|appreciate it)$/.test(t))return 'thanks';
+    if(/^(sorry|sry|my bad|oops|whoops)$/.test(t))return 'apology';
+    if(/^(hi|hey|hello|yo|sup|wassup|whats up|good morning|good night)$/.test(t))return 'greeting';
+    if(/^(bye|goodbye|gn|see ya|cya|later)$/.test(t))return 'goodbye';
+    if(/^(nice|great|awesome|amazing|perfect|love it|love this|wow)$/.test(t))return 'praise';
+    if(/^(bruh|bro|dude|man|brooo|bruhhh)$/.test(t))return 'casual-ping';
+    if(/^(really|rly|seriously|srsly|for real)$/.test(t))return 'disbelief';
+    return null;
+  }
+
+  // Company knowledge layer: HUNDY reads the actual About section instead of treating
+  // HUNDER TRAVELOUGES as just another destination keyword.
+  function companyKnowledge(){
+    const about=document.querySelector('#about');
+    const text=about?about.innerText.replace(/\s+/g,' ').trim():'';
+    const all=pkgs();
+    const durations=[...new Set(all.map(p=>dur(p.duration)))];
+    const places=allDestinations();
+    return {name:'HUNDER TRAVELOUGES',base:'Kannur',about:text,packageCount:all.length,durations,destinations:places};
+  }
+
+  function companyAboutReply(q){
+    const t=norm(q);
+    const brand=/\bhunder\b|\btravalouges?\b|\btravelouges?\b|\btravelogues?\b/.test(t);
+    // Company questions do not always mention the brand. Natural customers may ask
+    // "who do you work for?", "whose assistant are you?", "what company is this?" etc.
+    const companyRelation=/(who|what|which).*(do you|are you|is this|company|business|brand|team|organisation|organization)|who.*(work|employ|employee)|whose.*(assistant|guide|bot|company)|what.*(company|business|brand).* (this|you)|who.*behind/.test(t);
+    const aboutAsk=/(about|company|business|brand|organisation|organization|who.*behind|what.*is|what.*do|what.*offer|services|work|based|from|located|different|unique|why.*choose|good company|trust|real|legit|think|opinion|review|tell me more|know more)/.test(t);
+    if(!((brand&&aboutAsk)||companyRelation))return null;
+    const k=companyKnowledge();
+
+    if(/(?:what did you think|what do you think|your opinion|how do you feel|is it good|good company|worth choosing|why.*choose|what.*different|unique)/.test(t)){
+      return `From the information published on this website, I’d say HUNDER TRAVELOUGES has a clear strength: it is built around planned journeys rather than random destination combinations. 🧭\n\nIt is Kannur-based, focuses on practical group travel planning, and uses predefined routes so customers can choose a duration and then build from the destinations that actually belong to those packages.\n\nWhat I like about the setup is the structure — the planner, package database and WhatsApp enquiry flow are connected instead of making the customer figure everything out alone. 😊\n\nI’d still separate that from things the website does not publish clearly, such as detailed pricing, formal company history, cancellation policies or verified customer statistics. HUNDY should never pretend those facts are known.`;
+    }
+    if(/who.*(work|employ)|whose.*(assistant|guide|bot)|who.*(company|business|brand)|what.*(company|business|brand)|which.*(company|business|brand)/.test(t))return `I work for HUNDER TRAVELOUGES. 😊🧭 I’m HUNDY GUIDE, the travel assistant built into their website. I use the information published on this site — including the company’s About section and its planned trip database — to help customers with destinations, routes, packages and enquiries.`;
+    if(/where.*(based|located|from)|location|head.?office/.test(t))return `HUNDER TRAVELOUGES is presented on the website as a Kannur-based travel planning service. 📍`;
+    if(/what.*(do|offer)|services?|business|work/.test(t))return `HUNDER TRAVELOUGES focuses on structured trip planning: predefined travel packages, destination and route guidance, package comparisons, practical journey planning and customer-friendly group travel enquiries through WhatsApp. 🧭\n\nThe current site is designed around journeys starting and returning to Kannur.`;
+    if(/how.*(work|plan)|planner|book|booking|enquir/.test(t))return `The HUNDER TRAVELOUGES planner works in stages: choose the trip duration, choose a main destination, then select only destinations that belong to an existing planned combination. After a package is selected, the site can prepare the enquiry for WhatsApp.\n\nHUNDY GUIDE follows the same rule: it checks the published package database before recommending a route.`;
+    if(/destination|where.*go|places|locations|route/.test(t))return `The current HUNDER TRAVELOUGES planner includes destinations such as ${k.destinations.join(', ')}. I’ll only call a combination an official package when it actually exists in the site's package data.`;
+    if(/duration|how many days|how long|days|night/.test(t))return `The current planner offers these published duration formats: ${k.durations.join(', ')}. I use the exact package duration stored on the site rather than inventing a new one.`;
+    if(/price|cost|rate|budget|fee|charge|how much/.test(t))return `The current website does not expose package pricing in the HUNDY package data, so I won’t invent a price. I can identify the relevant official package and prepare a WhatsApp enquiry instead.`;
+    if(/include|facility|stay|hotel|food|vehicle|bus|transport|itinerary/.test(t))return `HUNDY can explain stays, routes, highlights and itinerary details when those fields are present in the published package data. If a detail is not stored there, I’ll say that clearly instead of guessing.`;
+    if(/history|founded|started|owner|founder|team|staff|office|license|registration/.test(t))return `That information is not clearly published in the current About section or HUNDY's package data, so I don't want to make it up. If you add those details to the About section later, HUNDY can be made to use them automatically.`;
+    if(/review|reviews|customer|traveller|experience|testimonial/.test(t))return `The website has a Traveller Experiences section for travel-story/reel content, but HUNDY should not invent customer ratings, review counts or testimonials that aren't actually published.`;
+    if(/about|tell me more|know more|who.*hunder|what.*hunder|hunder.*about/.test(t))return `HUNDER TRAVELOUGES is presented as a Kannur-based travel planning service focused on carefully structured routes, beautiful destinations, practical journeys and customer-friendly group travel planning.\n\nThe key idea is simple: instead of creating random combinations, the planner uses predefined packages and guides travellers through valid route combinations. HUNDY follows that same package-first approach. 😊`;
+    return null;
+  }
+
+  function generalConversationReply(q,tone){
+    const t=norm(q).trim();
+    const intent=conversationalIntent(q,tone);
+    const companyReply=companyAboutReply(q);
+    if(companyReply)return companyReply;
+    const simple={
+      surprise:`Whoa 😭 What happened? Tell me what confused or surprised you — I’m listening.`,
+      laugh:`😂 Okay, I’m here. What are we laughing about?`,
+      confused:`No worries 😊 Tell me what you’re trying to figure out, even if you explain it messily.`,
+      emphasis:`Got you 😊 I’m taking that seriously. What do you want to know?`,
+      agreement:`Perfect 😄 We’re on the same page. What’s next?`,
+      request:`Of course 😊 Tell me what you need and I’ll help.`,
+      thanks:`Anytime! 🫶 Happy to help.`,
+      apology:`You’re good 😊 No worries at all.`,
+      greeting:`Hey! 👋😊 I’m HUNDY. What’s up?`,
+      goodbye:`See you! 👋 Have a great one 😊`,
+      praise:`Ayy, love that 😄✨ What should we figure out next?`,
+      'casual-ping':`Yep 😄 I’m here. What’s going on?`,
+      disbelief:`Right? 😄 Tell me what you mean and I’ll break it down.`
+    };
+    if(simple[intent])return simple[intent];
+
+    // Social/capability questions: answer playfully instead of falling through to a travel fallback.
+    if(/\b(?:are|r)\s+(?:you|u)\s+(?:a\s+)?(?:good|great|helpful|useful|smart|smartest|bad)\s+(?:helper|assistant|guide|bot|ai)\b/.test(t))
+      return `I’d say I’m pretty handy 😄🧭 Try me — give me a tricky travel question, a random thought, or a messy one-line message and I’ll do my best to help.`;
+    if(/\b(?:who|what)\s+(?:are|r)\s+(?:you|u)\b/.test(t))
+      return `I’m HUNDY GUIDE 🤖🧭 — the travel helper for Hunder Travelogues. I can help with trips, destinations, routes, comparisons, and casual questions too.`;
+    if(/\b(?:can|do)\s+(?:you|u)\s+(?:help|understand)\b/.test(t))
+      return `Yep 😊 Talk to me naturally — short, messy, slangy, typo-filled, or full sentences. I’ll focus on what you mean.`;
+    if(/\b(?:how are you|how r u|hru|u good|you good)\b/.test(t))
+      return `I’m good and ready 😄🧭 What can I help you with?`;
+    if(/\b(?:what do you do|what can you do|what can u do)\b/.test(t))
+      return `A little bit of everything around your trip 😄🧭 I can help choose destinations, compare planned packages, explain routes and answer travel questions.`;
+    if(/\b(?:tell me something|say something|random question)\b/.test(t))
+      return `Random HUNDY fact 😄🌿 A good trip isn’t only about seeing more places — sometimes the best plan is the one that fits your time and energy.`;
+    if(/\b(?:joke|funny|make me laugh|say something funny)\b/.test(t))
+      return `Why did the traveller bring a map? 😄 Because getting lost wasn’t part of the package! 🗺️😂`;
+    if(/\b(?:bored|boring|nothing to do|im bored)\b/.test(t))
+      return `Bored already? 😄🌿 Give me a destination and we can turn that into a little trip idea.`;
+    if(/\b(?:good job|well done|nice one|you nailed it)\b/.test(t))
+      return `Thank you! 😄✨ Let’s keep going.`;
+    if(/\b(?:i hate|hate this|this sucks|terrible|worst)\b/.test(t))
+      return `Fair enough 😮‍💨 Tell me what went wrong and I’ll try to make it better.`;
+    if(/\b(?:i like|i love|i prefer)\b/.test(t) && !/\b(?:trip|travel|destination|place)\b/.test(t))
+      return `Got it 😊 Tell me a little more — I’m listening.`;
+    return null;
+  }
+
+  function learnPreferences(t){
+    const map={nature:['nature','forest','green','wildlife','waterfall'], hills:['hill','hills','mountain','mist','cool','viewpoint'],
+      peaceful:['peaceful','relax','calm','quiet'], coffee:['coffee'], tea:['tea'], heritage:['heritage','history','palace','temple'],
+      city:['city','shopping','urban'], family:['family','kids','children'], short:['short','quick','less time'], long:['long','complete','more places']};
+    Object.entries(map).forEach(([k,words])=>{if(words.some(w=>t.includes(w)))memory.preferences[k]=true});
+  }
+
+  function websiteHelp(){return `Of course. Hunder Travelogues is built around pre-planned routes, so I check the actual package database instead of creating random combinations.\n\nChoose one of the available durations:\n• 1 Day / 0 Nights\n• 2 Days / 1 Night\n• 2 Days / 3 Nights\n• 3 Days / 4 Nights\n\nThen choose your main destination. The planner only offers the next destinations that belong to valid planned combinations. You can go Back at any stage, review the final route and continue through WhatsApp.\n\nYou can also simply chat with me. You don't have to use exact sentences — even a destination name such as “Bangalore” or “Ramakakkalmedu” is enough for me to understand the conversation context.`}
+
+  function comparePackages(ps,focus=''){
+    if(!ps.length)return `I couldn't find an official package for that combination in the current planner.`;
+    if(ps.length===1)return packageSummary(ps[0]);
+    const lines=ps.slice(0,6).map((p,i)=>`${i+1}. ${formatPackage(p)}`).join('\n');
+    return `${focus?focus+'\n\n':''}Here are the official planned options I found:\n\n${lines}\n\nThese are real planner combinations, not routes I created on the fly. Tell me what matters most — distance, duration, hills, nature, city sightseeing, peaceful places, etc. — and I'll rank them.`;
+  }
+
+  function recommendForDestination(dest,t){
+    const matches=packagesContaining([dest]);
+    if(!matches.length)return `I don't currently see ${dest} in the official Hunder Travelogues package database.`;
+    const profile=destinationProfiles[dest]||{};
+    const d=durationFromText(t)||memory.lastDuration;
+    let candidates=matches.filter(p=>!d||p.duration.days===d.days&&p.duration.nights===d.nights);
+    if(!candidates.length)candidates=matches;
+    const scored=candidates.map(p=>{
+      let score=0;
+      const others=p.destinations.filter(x=>x!==dest);
+      others.forEach(x=>{if(profile.pairs?.includes(x))score+=5});
+      const blob=norm(JSON.stringify(p));
+      Object.entries(memory.preferences).forEach(([k,on])=>{if(!on)return; const words={nature:['nature','forest','waterfall','wildlife'],hills:['hill','mountain','scenic','viewpoint'],peaceful:['peaceful','meadow','scenic'],coffee:['coffee'],tea:['tea'],heritage:['heritage','palace'],city:['city','shopping'],family:['family','garden','lake'],short:[],long:[]}[k]||[]; if(words.some(w=>blob.includes(w)))score+=3});
+      if(memory.preferences.short&&p.duration.days<=2)score+=2;
+      if(memory.preferences.long&&p.duration.days>=3)score+=2;
+      return {p,score};
+    }).sort((a,b)=>b.score-a.score);
+    const top=unique(scored.slice(0,5).map(x=>x.p));
+    const first=top[0];
+    let text=`If your main destination is ${dest}, my first planned choice is **${first.destinations.join(' + ')}**.`;
+    const added=first.destinations.filter(x=>x!==dest);
+    if(added.length)text+=` It lets you visit ${added.join(' and ')} within one of Hunder Travelogues' existing routes.`;
+    text+=`\n\n${dur(first.duration)}${first.style||first.tripStyle?' • '+(first.style||first.tripStyle):''}.`;
+    if(first.highlights?.length)text+=`\nHighlights include ${first.highlights.slice(0,6).join(', ')}.`;
+    if(top.length>1)text+=`\n\nOther official ${dest} options:\n${top.slice(1,4).map(formatPackage).join('\n')}`;
+    return text.replace(/\*\*/g,'');
+  }
+
+  function bestCombination(dests,t){
+    const exact=packagesForDestinations(dests);
+    if(exact.length)return comparePackages(exact,`I checked all the requested destinations together. ${dests.join(' + ')} has an official combination.`);
+    const primary=dests[0], profile=destinationProfiles[primary]||{};
+    const candidates=packagesContaining([primary]).map(p=>{
+      let score=0;
+      const overlap=p.destinations.filter(x=>dests.includes(x)); score+=overlap.length*8;
+      if(profile.pairs?.some(x=>p.destinations.includes(x)))score+=4;
+      const blob=norm(JSON.stringify(p));
+      if(/best|recommend/.test(t)&&memory.preferences.hills&&/hill|mountain|scenic/.test(blob))score+=2;
+      return {p,score};
+    }).sort((a,b)=>b.score-a.score);
+    if(candidates.length){
+      const best=candidates[0].p;
+      return `I checked the exact combination first. I don't see ${dests.join(' + ')} as one official package.\n\nFor ${primary}, the closest planned route is **${best.destinations.join(' + ')}** (${dur(best.duration)}).\n\nI would use that official route rather than pretending ${dests.join(' + ')} is already a package.`.replace(/\*\*/g,'');
+    }
+    return `I don't see an official Hunder Travelogues package combining ${dests.join(' + ')}. I can show you the existing packages for ${primary} and find the closest planned option.`;
+  }
+
+  function recommendByPreference(t){
+    let terms=[];
+    if(/nature|forest|wildlife|green|waterfall/.test(t))terms.push('nature','forest','waterfall','wildlife');
+    if(/hill|mountain|mist|cool/.test(t))terms.push('hill','mountain','viewpoint','scenic');
+    if(/coffee/.test(t))terms.push('coffee'); if(/tea/.test(t))terms.push('tea');
+    if(/peaceful|relax|calm/.test(t))terms.push('peaceful','meadows','scenic');
+    if(/heritage|history|palace|temple/.test(t))terms.push('heritage','palace');
+    if(/city|shopping/.test(t))terms.push('city','shopping');
+    if(/family|kids/.test(t))terms.push('family','lake','garden');
+    const d=durationFromText(t)||memory.lastDuration;
+    let ranked=rankedPackages(terms);
+    if(d)ranked=ranked.filter(p=>p.duration.days===d.days&&p.duration.nights===d.nights);
+    if(!ranked.length)return `Tell me just a destination, duration, or preference such as hills, nature, waterfalls, coffee, sightseeing or a peaceful trip. I'll match it against the actual planned packages.`;
+    const top=unique(ranked).slice(0,5);
+    return `Based on what you've told me, I'd start with:\n\n${top.map(formatPackage).join('\n')}\n\nMy first choice is ${top[0].destinations.join(' + ')} because its package data matches your preference most closely.`;
+  }
+
+  function recommendForMonth(month){
+    const places=seasonal[month]||[]; const matches=unique(pkgs().filter(p=>p.destinations.some(d=>places.includes(d))));
+    if(!matches.length)return `I don't have a matching package for ${month} in the current official database.`;
+    return `For ${month}, I'd mainly look at ${places.join(', ')}.\n\nOfficial Hunder Travelogues options include:\n${matches.slice(0,8).map(formatPackage).join('\n')}`;
+  }
+
+  function analyzeOneWordOrFollowup(dest,t){
+    const previous=memory.lastDestination || memory.lastDestinations[0];
+    if(!previous||previous===dest)return recommendForDestination(dest,t);
+    const rel=relationship(previous,dest);
+    const previousPackage=packageForConversation();
+    let out=`Got it — you're now asking about ${dest}. I'm keeping ${previous} from the previous message in context.`;
+    if(previousPackage){
+      out+=`\n\nThe package I was considering was ${previousPackage.destinations.join(' + ')} (${dur(previousPackage.duration)}).`;
+    }
+    out+=`\n\n${rel.text}`;
+    if(rel.packages?.length){
+      out+=`\n\nSo you don't need to build a new route. The official combinations containing both are:\n${rel.packages.slice(0,5).map(formatPackage).join('\n')}`;
+      const best=rel.packages[0];
+      if(previousPackage && best.id===previousPackage.id)out+=`\n\nThis is consistent with the recommendation I just gave you.`;
+      else if(previousPackage)out+=`\n\nThis means switching to ${dest} changes the route from my previous recommendation, so I would use this combined package instead of simply adding ${dest} to the old route.`;
+      return out;
+    }
+    if(previousPackage){
+      const oldRoute=previousPackage.route?.length?previousPackage.route.join(' → '):previousPackage.destinations.join(' → ');
+      out+=`\n\nI would **not** simply add ${dest} to that trip. The current planned route is ${oldRoute}.`;
+    }
+    out+=`\n\n${recommendForDestination(dest,t)}`;
+    return out.replace(/\*\*/g,'');
+  }
+
+  async function roadDistance(a,b){
+    // Optional live routing. If the public routing service is unavailable, HUNDY simply
+    // falls back to package-structure reasoning and never invents a numeric distance.
+    try{
+      const geocode=async place=>{const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(place)+',India&count=1&language=en&format=json');const j=await r.json();return j.results?.[0]||null};
+      const [ga,gb]=await Promise.all([geocode(a),geocode(b)]); if(!ga||!gb)return null;
+      const u=`https://router.project-osrm.org/route/v1/driving/${ga.longitude},${ga.latitude};${gb.longitude},${gb.latitude}?overview=false`;
+      const j=await (await fetch(u)).json(); const m=j.routes?.[0]?.distance; return m?Math.round(m/1000):null;
+    }catch(e){return null}
+  }
+
+  async function contextualDistance(a,b){
+    const km=await roadDistance(a,b);
+    if(!km)return '';
+    if(km>=250)return `\n\nFor extra context, a live road-route check puts ${a} to ${b} at roughly ${km.toLocaleString()} km by road. That's a substantial transfer, so I would not treat ${b} as a small add-on to the ${a} trip.`;
+    if(km>=120)return `\n\nA live road-route check puts ${a} to ${b} at roughly ${km.toLocaleString()} km, so adding it changes the travel flow noticeably.`;
+    return `\n\nA live road-route check puts ${a} to ${b} at roughly ${km.toLocaleString()} km, so they are relatively practical to connect — subject to the official package route.`;
+  }
+
+  async function weather(place){
+    add('Let me check the latest weather for '+place+'…','bot','typing');
+    try{
+      const geo=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(place)+',India&count=1&language=en&format=json');
+      const g=await geo.json(); if(!g.results?.[0])throw new Error(); const r=g.results[0];
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${r.latitude}&longitude=${r.longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FKolkata&forecast_days=3`;
+      const f=await(await fetch(url)).json();
+      const code={0:'clear sky',1:'mostly clear',2:'partly cloudy',3:'overcast',45:'foggy',48:'foggy',51:'light drizzle',53:'drizzle',55:'heavy drizzle',61:'light rain',63:'rain',65:'heavy rain',71:'snow',80:'rain showers',81:'rain showers',82:'heavy showers',95:'thunderstorm'}[f.current.weather_code]||'mixed conditions';
+      const lines=f.daily.time.map((d,i)=>`${d}: ${Math.round(f.daily.temperature_2m_min[i])}–${Math.round(f.daily.temperature_2m_max[i])}°C, rain chance ${f.daily.precipitation_probability_max[i]??'n/a'}%`).join('\n');
+      return `${r.name}, ${r.country||'India'}\nRight now: ${Math.round(f.current.temperature_2m)}°C, ${code}, wind ${Math.round(f.current.wind_speed_10m)} km/h.\n\nNext 3 days:\n${lines}\n\nThat's live forecast information; conditions can change.`;
+    }catch(e){return `I couldn't retrieve live weather for ${place} right now. You can try again in a moment.`}
+  }
+
+  function websiteSelectionAnswer(){
+    const st=current();
+    if(!st?.selected?.length)return `You haven't started a planner selection yet. Choose a duration first.`;
+    const p=st.result||memory.lastPackage;
+    return p?`You're currently on ${p.destinations.join(' + ')} — ${dur(p.duration)}.\nRoute: ${(p.route||p.destinations).join(' → ')}.`:`You're currently building: ${st.selected.join(' → ')}.${st.duration?`\nDuration: ${dur(st.duration)}.`:''}`;
+  }
+
+  async function answer(q){
+    const t=norm(q); if(!t)return `Tell me what you're planning and I'll help you choose.`;
+    const tone=understandTone(q);
+    const cIntent=conversationalIntent(q,tone);
+    learnPreferences(t); memory.lastQuestion=q;
+
+    // Pure social/playful chat should be handled before the travel database fallback.
+    // If a message also contains a destination, normal travel reasoning still wins.
+    const socialReply=generalConversationReply(q,tone);
+    const hasTravelContext=/\b(?:hunder|travalouges?|travelouges?|package|trip|travel|destination|route|munnar|wayanad|vagamon|thekkady|kodaikanal|ooty|coorg|mysore|bangalore|kochi|marayoor|ramakkalmedu|idukki|athirappilly|alappuzha|belur)\b/i.test(t);
+    if(socialReply && !hasTravelContext){ memory.lastIntent='social'; return socialReply; }
+
+    // Handle one-word / shorthand messages like a real chat, while keeping HUNDY's
+    // own voice clean and professional.
+    if(cIntent==='surprise')return `I’m here 😮 Tell me what happened or what you want to know, and I’ll help.`;
+    if(cIntent==='laugh')return `😄 Got you. What are we figuring out?`;
+    if(cIntent==='confused')return `${emotionAwarePrefix(tone)} What part should I explain more clearly? 😊`;
+    if(cIntent==='emphasis')return `Absolutely — I’ll keep the information accurate and based on the planned Hunder Travelogues packages. 👍`;
+    if(cIntent==='agreement')return `Perfect 😊 What would you like to check next?`;
+    if(cIntent==='request')return `Of course 😊 Tell me what you need and I’ll help.`;
+    const dests=destinationInText(t), d=durationFromText(t);
+    if(tone.constraints.length){
+      const dayLimit=tone.constraints.find(c=>c.type==='days');
+      if(dayLimit){ memory.lastDuration={days:dayLimit.value,nights:dayLimit.value===1?0:undefined}; memory.preferences.short=true; }
+      memory.lastIntent='constraint';
+    }
+    if(d)memory.lastDuration=d;
+
+    if(/^(hi|hello|hey|hai|good morning|good evening|good afternoon)\b/.test(t))return `Hey! 😊 Tell me a destination, your available time, or even just a preference. I’ll keep the conversation in context and check the official Hunder Travelogues routes before recommending anything.`;
+    const dayLimit=tone.constraints.find(c=>c.type==='days');
+    if(dayLimit){
+      if(dayLimit.value===1){
+        const oneDay=pkgs().filter(p=>p.duration.days===1&&p.duration.nights===0);
+        return `${emotionAwarePrefix(tone)}
+You only have 1 day available, so I’ll treat that as a real trip limitation. I won’t suggest a 2-day or longer package.
+
+${oneDay.length?`I’ll focus on Hunder Travelogues’ official 1 Day / 0 Night options and find the best match for you.`:`I’ll look for the official 1 Day / 0 Night options in the planner.`}`;
+      }
+      return `${emotionAwarePrefix(tone)}
+I understand that you have only ${dayLimit.value} days available. I’ll use that as a hard limit when recommending packages.`;
+    }
+    if(tone.emotion==='frustrated' && !dests.length)return `${emotionAwarePrefix(tone)} Tell me what is bothering you about the trip, and I’ll help you work around it.`;
+    if(/thank|thanks|great|okay|ok|nice/.test(t)&&t.split(' ').length<=4)return `You're welcome! 😊 I'm keeping the trip context, so you can simply send the next destination or question.`;
+    if(/how.*(use|work|plan)|website|planner|how.*book|how.*choose/.test(t))return websiteHelp();
+    if(/(current|selected).*(trip|journey)|my trip|what.*selected/.test(t))return websiteSelectionAnswer();
+
+    const month=Object.keys(seasonal).find(m=>t.includes(m.toLowerCase())); if(month)return recommendForMonth(month);
+    if(/weather|temperature|rain|forecast|climate/.test(t))return weather(dests[0]||memory.lastDestination||'Munnar');
+
+    if(/price|cost|rate|budget|fare|how much/.test(t))return `Package pricing isn't stored in the current website database, so I won't guess an amount. Tell me the destination/package and I can identify the exact planned route for a WhatsApp enquiry.`;
+
+    if(/all.*(package|trip)|what.*(package|trip).*have|show.*(package|trip)|available.*(package|trip)/.test(t)){
+      const list=d?pkgs().filter(p=>p.duration.days===d.days&&p.duration.nights===d.nights):pkgs();
+      return `${d?`For ${dur(d)} `:'Here are'} the official packages currently in the planner:\n\n${unique(list).map(formatPackage).join('\n')}`;
+    }
+
+    if(/compare|difference|versus|vs\b|better/.test(t)&&dests.length>=2){
+      const ps=packagesContaining(dests);
+      return ps.length?comparePackages(ps,`You're comparing ${dests.join(' and ')}.`):bestCombination(dests,t);
+    }
+
+    if(dests.length>=2 && /best|recommend|combination|combine|together|with|also|add|from/.test(t)){
+      memory.lastDestinations=dests; memory.lastDestination=dests[dests.length-1];
+      const r=bestCombination(dests,t); memory.lastIntent='combination'; return r;
+    }
+
+    if(dests.length===1){
+      const dest=dests[0];
+      // A bare one-word destination is intentionally treated as a follow-up when there is context.
+      const bare=norm(q).split(' ').length<=3 && !/\?|how|what|which|tell|show|where|why/.test(t);
+      const follow=/^(what about|how about|and|also|then|next|instead|another|there)\b/.test(t)||bare;
+      if(follow && memory.lastDestination && memory.lastDestination!==dest){
+        memory.lastDestinations=[memory.lastDestination,dest]; memory.lastDestination=dest; memory.lastIntent='followup-destination';
+        let r=analyzeOneWordOrFollowup(dest,t);
+        // Add distance only when the conversation makes a connection meaningful.
+        if(memory.lastDestinations.length===2){
+          const a=memory.lastDestinations[0], b=memory.lastDestinations[1];
+          if(!packagesForDestinations([a,b]).length)r+=await contextualDistance(a,b);
+        }
+        return r;
+      }
+      memory.lastDestination=dest; memory.lastDestinations=[dest];
+      if(/include|option|package|trip|go|visit|better|best|recommend|with|combination|possible/.test(t)||bare||!t.match(/^(hi|hello)/)){
+        memory.lastIntent='destination';
+        const r=recommendForDestination(dest,t); memory.lastRecommendation=r;
+        const matching=d?sameDurationPackages([dest],d):[];
+        if(d){return matching.length?`For ${dur(d)}, the planned ${dest} option is:\n\n${matching.map(formatPackage).join('\n')}\n\n${r}`:`I don't currently see ${dest} in a ${dur(d)} package.\n\n${r}`}
+        return r;
+      }
+    }
+
+    // Questions with no explicit destination can still use the previous conversation.
+    if(/^(and|also|then|what about|how about|which one|which is better|what do you recommend|recommend|best one|that one|there)\b/.test(t) && memory.lastDestination){
+      return recommendForDestination(memory.lastDestination,t);
+    }
+    if(/nature|forest|wildlife|hill|mountain|peaceful|relax|coffee|tea|waterfall|heritage|palace|city|shopping|family|kids|short|quick|complete|long/.test(t)){
+      memory.lastIntent='preference'; return recommendByPreference(t);
+    }
+    if(/include|what.*(get|included)|facilit|stay|hotel|food|bus|vehicle|itinerary|route|distance/.test(t)){
+      const ps=dests.length?packagesContaining(dests):(memory.lastDestination?packagesContaining([memory.lastDestination]):[]);
+      if(ps.length){
+        const p=memory.lastPackage||ps[0];
+        memory.lastPackage=p;
+        return packageSummary(p)+`\n\nI will only claim details that are actually present in the website data. For anything not listed there, please confirm through WhatsApp.`;
+      }
+      return `Tell me the destination or package name and I'll check the exact stored package details.`;
+    }
+    // Never leave a customer with a dead-end answer. If the exact intent is unclear,
+    // acknowledge the message and ask one focused clarification while preserving context.
+    const context=memory.lastDestination?` I still have ${memory.lastDestination} from our conversation.`:'';
+    return `I’m with you 😊${context} I may need one small clarification to answer that accurately. Try saying it another way — for example, “what do you mean?”, “tell me about Hunder”, “who do you work for?”, “what can you do?”, or “which trip is best for me?” and I’ll work out what you mean.`;
+  }
+
+  function add(text,who,extra){
+    const d=document.createElement('div'); d.className='hundyMsg '+(who==='user'?'hundyUser':'hundyBot')+(extra==='typing'?' hundyTyping':'');
+    d.textContent=text; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d;
+  }
+  function openChat(){
+    panel.classList.add('open');
+    if(!msgs.children.length)add(`Hi! I'm HUNDY GUIDE. 😊\n\nI can help you explore Hunder Travelogues’ planned trips, understand destinations and routes, compare options, recommend suitable packages, and answer your travel questions. Ask me anything about your journey!`,'bot');
+    setTimeout(()=>input.focus(),50);
+  }
+  function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+  async function ask(q){
+    openChat(); add(q,'user'); input.disabled=true;
+    memory.turns.push({role:'user',text:q,time:Date.now()});
+    const typing=add('Let me analyze the planned routes and your previous message…','bot','typing');
+    await wait(THINK_MIN+Math.random()*(THINK_MAX-THINK_MIN));
+    try{
+      const a=await answer(q); typing.remove(); add(a,'bot'); memory.turns.push({role:'assistant',text:a,time:Date.now()});
+      // Keep a useful package pointer after every answer.
+      const st=current(); if(st?.result)memory.lastPackage=st.result;
+      if(memory.lastDestination && !memory.lastPackage){const ps=packagesContaining([memory.lastDestination]); if(ps.length===1)memory.lastPackage=ps[0];}
+    }catch(e){
+      typing.remove(); add(`I ran into a small problem while checking that. Please try again — I’ll keep the conversation context and stay within the official Hunder Travelogues package data.`,'bot');
+    }
+    input.disabled=false; input.focus();
+  }
+
+  $('hundyLauncher').onclick=()=>panel.classList.contains('open')?panel.classList.remove('open'):openChat();
+  $('hundyClose').onclick=()=>panel.classList.remove('open');
+  document.querySelectorAll('.hundyChip').forEach(b=>b.onclick=()=>ask(b.dataset.q));
+  $('hundyForm').addEventListener('submit',e=>{e.preventDefault();const q=input.value.trim();if(q){input.value='';ask(q)}});
+})();
 </script>
 </body>
 </html>
